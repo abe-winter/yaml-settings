@@ -53,7 +53,7 @@ public class StringList extends LinearLayout implements View.OnClickListener {
     }
 
     // note: this is used when building the view from cloud data, not when 'add' is clicked.
-    void addElt(Context c, final String val){
+    public void addElt(Context c, final String val){
         final LinearLayout elt = new LinearLayout(c);
         elt.setOrientation(HORIZONTAL);
         TextView tv = new TextView(c);

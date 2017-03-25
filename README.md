@@ -45,7 +45,7 @@ dependencies {
       name: terms
       description: "Email when there's a security notice or a change in our terms."
 ```
-* in your view XML:
+* in your view XML
 ```xml
 <app_package.YamlSettings
     android:id="@+id/yaml_settings"
@@ -55,6 +55,7 @@ dependencies {
     app:strListDelIcon="@drawable/ic_delete_black_24dp"
     android:padding="18dp"/>
 ```
+* notes on view XML
 	- `app:yamlRawId` has to match the res/raw/whatever.yml file you created
 	- `app:strListDelIcon` has to be a drawable in your project. Leave it out if your yaml file doesn't use the StringList widget
 	- I'm not sure why, but this needs to be app_package.YamlSettings (as opposed to com.github.abe_winter.yaml_settings.YamlSettings). app_package is whatever you set in the AndroidManifest.xml for your app.

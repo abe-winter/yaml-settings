@@ -9,8 +9,8 @@ import android.widget.LinearLayout;
 
 public class ImageSel extends LinearLayout implements View.OnClickListener {
     Button m_btn;
-    ImageView m_img;
-    SettingsNode m_node;
+    public ImageView m_img;
+    public SettingsNode m_node;
     SettingsCallbackProxy m_proxy;
 
     public ImageSel(Context c, SettingsNode node){
