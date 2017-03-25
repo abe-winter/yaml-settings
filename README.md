@@ -6,13 +6,13 @@ This is an android `View` widget that creates a custom settings screen based on 
 
 ### quick how-to
 
-* in your build.gradle (change v0.0.0 below to newest tag on github):
+* in your build.gradle (change v0.* below to newest tag):
 ```groovy
 repositories {
     maven { url 'https://www.jitpack.io' }
 }
 dependencies {
-	compile 'com.github.abe-winter:yaml-settings:v0.0.0'
+	compile 'com.github.abe-winter:yaml-settings:v0.0.2'
 }
 ```
 * in res/raw/settings.yaml, create something like:
