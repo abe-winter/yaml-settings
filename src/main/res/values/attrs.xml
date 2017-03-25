@@ -1,0 +1,8 @@
+<resources>
+   <declare-styleable name="YamlSettings">
+       <!-- required -->
+       <attr name="yamlRawId" format="reference" />
+       <!-- required if you use StringList -->
+       <attr name="strListDelIcon" format="reference" />
+   </declare-styleable>
+</resources>
