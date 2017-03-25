@@ -47,7 +47,7 @@ dependencies {
 ```
 * in your view XML
 ```xml
-<app_package.YamlSettings
+<com.github.abe_winter.yaml_settings.YamlSettings
     android:id="@+id/yaml_settings"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -58,8 +58,74 @@ dependencies {
 * notes on view XML
 	- `app:yamlRawId` has to match the res/raw/whatever.yml file you created
 	- `app:strListDelIcon` has to be a drawable in your project. Leave it out if your yaml file doesn't use the StringList widget
-	- I'm not sure why, but this needs to be app_package.YamlSettings (as opposed to com.github.abe_winter.yaml_settings.YamlSettings). app_package is whatever you set in the AndroidManifest.xml for your app.
 	- the `android:id` field attr is optional; you use it to access 
+* access the settings in a Fragment/Activity:
+```java
+public class SettingsFragment extends Fragment implements SettingsCallback {
+    public SettingsFragment() {}
+
+    // example populating a settings screen with different types from JSON
+    void ondataload(JSONObject reply) throws JSONException {
+        Map<String, View> view_lookup = ((YamlSettings)getView().findViewById(R.id.yaml_settings)).view_lookup;
+        JSONObject body = reply.getJSONObject("body");
+        for (Iterator<String> it=body.keys(); it.hasNext();){
+            String key = it.next();
+            if (!view_lookup.containsKey(key)){
+                Log.e(TAG, "unk settings key "+key);
+                continue;
+            }
+            if (body.isNull(key)) continue;
+            switch (key){
+                case "profile_picture":{
+                    byte[] bytes = Base64.decode(body.getString(key), Base64.DEFAULT);
+                    ((ImageSel)view_lookup.get(key)).m_img.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                    break;
+                }
+                case "locations":{
+                    StringList sl = (StringList) view_lookup.get(key);
+                    JSONArray arr = body.getJSONArray(key);
+                    for (int i=0;i<arr.length();++i) sl.addElt(getContext(), arr.getString(i));
+                    break;
+                }
+                case "connect_with.kind":{
+                    // radio
+                    // todo: this is horrible. the indexes are going to change
+                    int index = Arrays.asList("Singles", "Professionals", "Community").indexOf(body.get(key));
+                    ((RadioButton)((RadioGroup)view_lookup.get(key)).getChildAt(index)).setChecked(true);
+                    break;
+                }
+                case "email_preferences.match":
+                case "email_preferences.terms":{
+                    // boolean switch
+                    ((Switch)view_lookup.get(key)).setChecked(body.getBoolean(key));
+                    break;
+                }
+                default: {
+                    ((TextInputEditText)view_lookup.get(key)).setText(body.getString(key));
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // set listener on the YamlSettings instance.
+        // Doesn't have to be in onActivityCreated, but needs to be after views have been inflated.
+        ((YamlSettings)getView().findViewById(R.id.yaml_settings)).listener = this;
+    }
+
+    // callbacks from SettingsCallback interface
+    public void btnclick(View sview, View v, SettingsNode node){}
+    public void textchange(View sview, Editable e, String group, String name, String value) {}
+    public void radiochange(View sview, CompoundButton buttonView, boolean isChecked, String group, String name, String option){}
+    public void switchchange(View sview, CompoundButton buttonView, boolean isChecked, String group, String name){}
+    public void listadd(StringList sl, String name, String val) {}
+    public void listrm(StringList sl, final View elt, final String name, final String val) {}
+    public void pickimage(ImageSel sel, String name) {}
+}
+```
 
 ### examples
 
@@ -68,3 +134,7 @@ dependencies {
 ### tests
 
 Sorry.
+
+### roadmap
+
+* [ ] include API sync logic
