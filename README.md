@@ -7,7 +7,7 @@ This is an android `View` widget that creates a custom settings screen based on 
 ### quick how-to
 
 * in your build.gradle (change v0.0.0 below to newest tag on github):
-	- ```groovy
+	```groovy
 repositories {
     maven { url 'https://www.jitpack.io' }
 }
@@ -16,7 +16,7 @@ dependencies {
 }
 ```
 * in res/raw/settings.yaml, create something like:
-	- ```yaml
+	```yaml
 # todo: need better docs for this
 - type: group
   name: your_info
@@ -46,7 +46,7 @@ dependencies {
       description: "Email when there's a security notice or a change in our terms."
 ```
 * in your view XML:
-	- ```xml
+	```xml
 <app_package.YamlSettings
     android:id="@+id/yaml_settings"
     android:layout_width="match_parent"
