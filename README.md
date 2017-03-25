@@ -2,7 +2,14 @@
 
 [![](https://jitpack.io/v/abe-winter/yaml-settings.svg)](https://jitpack.io/#abe-winter/yaml-settings)
 
-This is an android `View` widget that creates a custom settings screen based on a YAML
+This is an android `View` widget that creates a custom settings screen based on a YAML.
+
+The YAML file describes how to draw the settings but doesn't contain values for them, which means your app code has to:
+* storing and retrieving settings from disk
+* syncing with the server
+* populating the generated view with values
+
+(Those tasks may become more automatic in future versions of this library. File an issue if you start working on one of them.)
 
 ### quick how-to
 
@@ -129,12 +136,16 @@ public class SettingsFragment extends Fragment implements SettingsCallback {
 
 ### examples
 
-(todo)
+(see above)
+
+(todo: best example would be a working app)
 
 ### tests
 
-Sorry.
+(Sorry.)
 
 ### roadmap
 
-* [ ] include API sync logic
+* screenshots
+* better docs
+* api/sync logic
