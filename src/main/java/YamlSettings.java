@@ -61,7 +61,7 @@ class SettingsNode {
     }
 }
 
-interface SettingsCallback {
+public interface SettingsCallback {
     void btnclick(View sview, View v, SettingsNode node);
     void textchange(View sview, Editable e, String group, String name, String value);
     void radiochange(View sview, CompoundButton buttonView, boolean isChecked, String group, String name, String option);
@@ -75,13 +75,13 @@ interface SettingsCallbackProxy {
     SettingsCallback getListener();
 }
 
-class ImageSel extends LinearLayout implements View.OnClickListener {
+public class ImageSel extends LinearLayout implements View.OnClickListener {
     Button m_btn;
     ImageView m_img;
     SettingsNode m_node;
     SettingsCallbackProxy m_proxy;
 
-    ImageSel(Context c, SettingsNode node){
+    public ImageSel(Context c, SettingsNode node){
         super(c);
         setOrientation(VERTICAL);
         m_img = new ImageView(c);
@@ -100,9 +100,9 @@ class ImageSel extends LinearLayout implements View.OnClickListener {
     }
 }
 
-class MissingAttr extends Exception {}
+public class MissingAttr extends Exception {}
 
-class StringList extends LinearLayout implements View.OnClickListener {
+public class StringList extends LinearLayout implements View.OnClickListener {
     LinearLayout m_elts;
     Button m_btn;
     SettingsCallbackProxy mproxy;
@@ -111,7 +111,7 @@ class StringList extends LinearLayout implements View.OnClickListener {
     SettingsNode m_node;
     int strListDelIcon;
 
-    StringList(Context c, SettingsNode node, int strListDelIcon_) throws MissingAttr {
+    public StringList(Context c, SettingsNode node, int strListDelIcon_) throws MissingAttr {
         super(c);
         strListDelIcon = strListDelIcon_;
         if (strListDelIcon_ == 0) throw new MissingAttr();
