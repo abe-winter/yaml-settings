@@ -1,4 +1,4 @@
-package me.newsmatch.newsmatch;
+package com.github.abe_winter.yaml_settings;
 
 import android.content.Context;
 import android.content.DialogInterface;
