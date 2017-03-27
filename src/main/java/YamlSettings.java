@@ -2,8 +2,12 @@ package com.github.abe_winter.yaml_settings;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.PagerTabStrip;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
@@ -11,18 +15,23 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Space;
 import android.widget.Switch;
+import android.widget.TableLayout;
 import android.widget.TextView;
+import android.support.design.widget.TabLayout;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
 
@@ -40,6 +49,80 @@ interface SettingsCallbackProxy {
     SettingsCallback getListener();
 }
 
+class YamlPager extends PagerAdapter {
+    final String TAG = "NM_YamlSettings";
+    TabLayout mtabber;
+    ViewPager mpager;
+    ArrayList<String> mtitles;
+    ArrayList<LinearLayout> mpages;
+    ArrayList<FrameLayout> mframes;
+
+    YamlPager(Context c){
+        mtabber = new TabLayout(c);
+        mtabber.setLayoutParams(new TabLayout.LayoutParams(
+            TabLayout.LayoutParams.MATCH_PARENT,
+            TabLayout.LayoutParams.WRAP_CONTENT,
+            Gravity.TOP
+        ));
+        mpager = new ViewPager(c);
+        mtabber.setupWithViewPager(mpager);
+        ViewPager.LayoutParams lparams = new ViewPager.LayoutParams();
+        lparams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        lparams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        mpager.setLayoutParams(lparams);
+        mpages = new ArrayList<>();
+        mframes = new ArrayList<>();
+        mtitles = new ArrayList<>();
+        mpager.setAdapter(this);
+    }
+
+    void addView(View v){
+        mpages.get(mpages.size()-1).addView(v);
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        container.addView(mframes.get(position));
+        return mframes.get(position);
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        container.removeView(mframes.get(position));
+    }
+
+    @Override
+    public int getCount() {return mpages.size();}
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return view == object;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return mtitles.get(position);
+    }
+
+    void addTab(Context c, SettingsNode node){
+        mtitles.add(node.description != null ? node.description : node.name);
+        mframes.add(new ScrollView(c));
+        LinearLayout ll = new LinearLayout(c);
+        ll.setLayoutParams(YamlSettings.def_layout());
+        ll.setOrientation(LinearLayout.VERTICAL);
+        int dip10 = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10.f, c.getResources().getDisplayMetrics());
+        ll.setPadding(dip10, dip10, dip10, dip10);
+        mpages.add(ll);
+        mframes.get(mframes.size()-1).addView(ll);
+        mframes.get(mframes.size()-1).setLayoutParams(YamlSettings.def_layout());
+    }
+
+    void report(){
+        Log.d(TAG, "YamlAdapter has "+mpages.size()+" pages");
+        for (int i=0;i<mpages.size();++i) Log.d(TAG, "page "+i+" has "+mpages.get(i).getChildCount());
+    }
+}
+
 public class YamlSettings extends LinearLayout implements SettingsCallbackProxy {
     final String AttrNs = "http://schemas.android.com/apk/res-auto";
     final String TAG = "NM_YamlSettings";
@@ -47,23 +130,44 @@ public class YamlSettings extends LinearLayout implements SettingsCallbackProxy 
     public SettingsCallback listener;
     public Map<String, View> view_lookup;
     int strListDelIcon;
+    YamlPager madapter;
 
-    public YamlSettings(Context c, AttributeSet attrs) throws IOException, MissingAttr {
+    public class TabMisuse extends Exception {}
+
+    public YamlSettings(Context c, AttributeSet attrs) throws IOException, StringList.MissingAttr, TabMisuse {
         super(c, attrs);
         strListDelIcon = attrs.getAttributeResourceValue(AttrNs, "strListDelIcon", 0);
         InputStream stream = getResources().openRawResource(attrs.getAttributeResourceValue("http://schemas.android.com/apk/res-auto", "yamlRawId", 0));
         YamlReader r = new YamlReader(IOUtils.toString(stream, "UTF-8"));
         prefs = SettingsNode.fromlist((ArrayList<Map>) r.read());
-        setOrientation(VERTICAL);
         view_lookup = new HashMap<String, View>();
-        addNodes(c, prefs, null);
+        setOrientation(LinearLayout.VERTICAL);
+        if (prefs.length > 0 && prefs[0].type.equals("tab")){
+            for (int i=0; i<prefs.length; ++i){
+                if (!prefs[i].type.equals("tab")){
+                    Log.e(TAG, "tab misuse at "+i+" "+prefs[i].type);
+                    throw new TabMisuse();
+                }
+            }
+            madapter = new YamlPager(c);
+            super.addView(madapter.mtabber);
+            super.addView(madapter.mpager);
+        }
+        addNodes(c, prefs, null, true);
+        if (madapter != null) madapter.notifyDataSetChanged();
     }
 
-    void addNodes(Context c, SettingsNode[] nodes, String group) throws MissingAttr {
+    void addNodes(Context c, SettingsNode[] nodes, String group, boolean top) throws StringList.MissingAttr {
         for (int i=0;i<nodes.length;++i) addNode(c, nodes[i], group);
     }
 
     static LayoutParams def_layout(){return new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);}
+
+    @Override
+    public void addView(View v){
+        if (madapter != null) madapter.addView(v);
+        else super.addView(v);
+    }
 
     // convert "xy_za_bc" > "Xy za bc"
     static String mktitle(String name){
@@ -86,7 +190,7 @@ public class YamlSettings extends LinearLayout implements SettingsCallbackProxy 
         addView(v);
     }
 
-    void addNode(Context c, final SettingsNode node, final String group) throws MissingAttr {
+    void addNode(Context c, final SettingsNode node, final String group) throws StringList.MissingAttr {
         final View outer = this;
         switch (node.type){
             case "group":{
@@ -189,6 +293,10 @@ public class YamlSettings extends LinearLayout implements SettingsCallbackProxy 
                 view_lookup.put(fullname(group, node.name), isel);
                 break;
             }
+            case "tab":{
+                madapter.addTab(c, node);
+                break;
+            }
             default:{
                 Log.e(TAG, "unk widget type "+node.type);
                 break;
@@ -200,7 +308,7 @@ public class YamlSettings extends LinearLayout implements SettingsCallbackProxy 
             (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10.f, getResources().getDisplayMetrics())
         ));
         addView(sp);
-        if (node.children != null) addNodes(c, node.children, node.name);
+        if (node.children != null) addNodes(c, node.children, node.name, false);
     }
 
     String fullname(String group, String name){return group == null ? name : group+"."+name;}

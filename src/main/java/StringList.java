@@ -20,6 +20,8 @@ public class StringList extends LinearLayout implements View.OnClickListener {
     SettingsNode m_node;
     int strListDelIcon;
 
+    public class MissingAttr extends Exception {}
+
     public StringList(Context c, SettingsNode node, int strListDelIcon_) throws MissingAttr {
         super(c);
         strListDelIcon = strListDelIcon_;
