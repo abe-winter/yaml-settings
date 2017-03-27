@@ -157,6 +157,10 @@ public class YamlSettings extends LinearLayout implements SettingsCallbackProxy 
         if (madapter != null) madapter.notifyDataSetChanged();
     }
 
+    public void setTab(int i){
+        madapter.mpager.setCurrentItem(i);
+    }
+
     void addNodes(Context c, SettingsNode[] nodes, String group, boolean top) throws StringList.MissingAttr {
         for (int i=0;i<nodes.length;++i) addNode(c, nodes[i], group);
     }
