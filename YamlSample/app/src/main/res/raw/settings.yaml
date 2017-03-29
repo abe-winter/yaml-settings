@@ -1,0 +1,42 @@
+- type: tab
+  name: your_info
+  description: About you
+  children:
+  - type: email
+    name: email
+    description: "We use your email to communicate with you, but don't share it with other users."
+  - {type: text, name: display_name}
+  - {type: number, name: age}
+  - {type: text, name: sex}
+  - {type: button, name: change_password}
+  - {type: button, name: delete_account}
+  - {type: image, name: profile_picture}
+- type: tab
+  name: connect_with
+  description: Matching
+  children:
+  - type: radio
+    name: kind
+    options: ["Singles", "Professionals", "Community"]
+  - type: text
+    name: sex_to_meet
+  - type: group
+    name: age_range
+    description: "You can leave these blank if you want."
+    children:
+      - {type: number, name: min_age}
+      - {type: number, name: max_age}
+- type: tab
+  name: misc
+  description: Settings
+  children:
+  - {type: group, name: invitations}
+  - type: group
+    name: email_preferences
+    children:
+      - type: switch
+        name: match
+        description: "Email when someone accepts a match (at most once daily)."
+      - type: switch
+        name: terms
+        description: "Email when there's a security notice or a change in our terms."

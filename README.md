@@ -11,6 +11,12 @@ The YAML file describes how to draw the settings but doesn't contain values for 
 
 (Those tasks may become more automatic in future versions of this library. File an issue if you start working on one of them.)
 
+### example
+
+This is a screenshot of the app in the [YamlSample](YamlSample) folder.
+
+![screenshot](yaml-screenshot.png "screenshot")
+
 ### quick how-to
 
 * in your build.gradle (change v0.* below to newest tag):
