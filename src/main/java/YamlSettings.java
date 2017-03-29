@@ -53,7 +53,7 @@ public class YamlSettings extends LinearLayout implements SettingsCallbackProxy 
     public SettingsCallback listener;
     public Map<String, View> view_lookup;
     int strListDelIcon;
-    YamlPager madapter;
+    public YamlPager madapter;
 
     public class TabMisuse extends Exception {}
 

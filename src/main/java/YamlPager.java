@@ -16,13 +16,13 @@ import android.widget.ScrollView;
 
 import java.util.ArrayList;
 
-class YamlPager extends PagerAdapter {
+public class YamlPager extends PagerAdapter {
     final String TAG = "YS/YP";
     TabLayout mtabber;
     ViewPager mpager;
     ArrayList<String> mtitles;
-    ArrayList<LinearLayout> mpages;
-    ArrayList<FrameLayout> mframes;
+    public ArrayList<LinearLayout> mpages;
+    ArrayList<FrameLayout> mframes; // todo: can I add a ScrollView directly?
 
     YamlPager(Context c){
         mtabber = new TabLayout(c);
@@ -77,6 +77,8 @@ class YamlPager extends PagerAdapter {
         LinearLayout ll = new LinearLayout(c);
         ll.setLayoutParams(YamlSettings.def_layout());
         ll.setOrientation(LinearLayout.VERTICAL);
+        ll.setFocusable(true);
+        ll.setFocusableInTouchMode(true);
         int dip10 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10.f, c.getResources().getDisplayMetrics());
         ll.setPadding(dip10, dip10, dip10, dip10);
         mpages.add(ll);
